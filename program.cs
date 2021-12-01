@@ -97,7 +97,7 @@ namespace Opdracht
                         }
                         break;
                     case ConsoleKey.D3:
-                        program.UpdateStock();
+                        program.UpdateStock(productRange);
                         break;
                     case ConsoleKey.D8:
                         program.ShowMenu();
@@ -122,8 +122,73 @@ namespace Opdracht
             return mp3Players;
         }
 
-        public void UpdateStock()
+        public void UpdateStock(List<Product> products)
         {
+            // vragen aan de gebruiker welke id we willen aanpassen
+            Console.WriteLine("Van welk product wil je de voorraad aanpassen?");
+            
+            int id = 0;
+            bool canAdd = false;
+            
+            try
+            {
+                id = int.Parse(Console.ReadLine());
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Vul een nummer in");
+                UpdateStock(products);
+            }
+            // controle of het id wel bestaat
+            foreach (var product in products)
+            {
+                if (product.Id == id)
+                {
+                    canAdd = true;
+                    
+                    break;
+                }
+            }
+
+            if (!canAdd)
+            {
+                Console.WriteLine("Dit product bestaat niet, probeer het opnieuw.");
+                UpdateStock(products);
+            }
+            
+            int mutation = 0;
+            bool exit = false;
+            while (exit ==  false)
+            {
+                // vragen hoeveel de stock is veranderd
+                Console.WriteLine("Wat is de mutatie op de voorraad?");
+                
+                try
+                {
+                    mutation = int.Parse(Console.ReadLine());
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("Vul een nummer in");
+                }
+                
+                
+                // de stock veranderen
+                foreach (var product in products)
+                {
+                    if (product.Id == id && product.Stock + mutation > 0)
+                    {
+                        product.Stock = product.Stock + mutation; // hier de nieuwe stock invullen
+                        Console.WriteLine($"De voorraad van product {id} is nu {product.Stock}");
+                        exit = true;
+                    }
+                    else if (product.Stock + mutation < 0)
+                    {
+                        Console.WriteLine("De voorraad van dit product kan niet lager dan 0 zijn.");
+                        break;
+                    }
+                }
+            }
         }
     }
 } 

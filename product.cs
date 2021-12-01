@@ -18,5 +18,10 @@ namespace Opdracht
             Price = price;
             Stock = stock;
         }
+
+        public Product()
+        {
+            
+        }
     }
 }
