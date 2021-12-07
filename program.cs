@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Opdracht
 {
@@ -71,7 +72,7 @@ namespace Opdracht
 
         public void ShowMenu()
         {
-            Console.WriteLine("\n\nMENU\n1. Overzicht mp3 spelers\n2. Overzicht voorraad\n3. Muteer voorraad\n8. Toon menu\n9. exit");
+            Console.WriteLine("\n\nMENU\n1. Overzicht mp3 spelers\n2. Overzicht voorraad\n3. Muteer voorraad\n4. Bereken statistieken\n8. Toon menu\n9. exit");
 
             bool exit = false;
             List<Product> productRange = ProductRange();
@@ -98,6 +99,9 @@ namespace Opdracht
                         break;
                     case ConsoleKey.D3:
                         program.UpdateStock(productRange);
+                        break;
+                    case ConsoleKey.D4:
+                        program.StatisticalData(productRange);
                         break;
                     case ConsoleKey.D8:
                         program.ShowMenu();
@@ -158,7 +162,7 @@ namespace Opdracht
             
             int mutation = 0;
             bool exit = false;
-            while (exit ==  false)
+            while (!exit)
             {
                 // vragen hoeveel de stock is veranderd
                 Console.WriteLine("Wat is de mutatie op de voorraad?");
@@ -171,7 +175,6 @@ namespace Opdracht
                 {
                     Console.WriteLine("Vul een nummer in");
                 }
-                
                 
                 // de stock veranderen
                 foreach (var product in products)
@@ -189,6 +192,50 @@ namespace Opdracht
                     }
                 }
             }
+        }
+
+        public void StatisticalData(List<Product> products)
+        {
+            List<Product> productRange = ProductRange();
+            
+            // Bereken aantal mp3 spelers in voorraad
+            int totalStock = 0;
+            foreach (var product in productRange)
+            {
+                totalStock = totalStock + product.Stock;
+            }
+            Console.WriteLine($"Aantal mp3 spelers in voorraad: {totalStock}");
+            
+            // Bereken totaale waarde van voorraad
+            double totalWorth = 0;
+            foreach (var product in productRange)
+            {
+                totalWorth = totalWorth + product.Stock * product.Price;
+            }
+            Console.WriteLine($"Totale waarde van de voorraad: {totalWorth}");
+            
+            // Bereken gemiddelde prijs per mp3 speler
+            double averagePrice = totalWorth / totalStock;
+            Console.WriteLine($"Gemiddelde prijs per product: {averagePrice}");
+
+            // Bereken beste prijs per mB mp3 speler
+            int bestValueProduct = 0;
+            double valueForMoney;
+            double previousValueForMoney = 0;
+            foreach (var product in productRange)
+            {
+                if (productRange.First() == product)
+                {
+                    previousValueForMoney = product.Price / product.MbSize;
+                }
+                valueForMoney = product.Price / product.MbSize;
+                if (previousValueForMoney >= valueForMoney)
+                {
+                    previousValueForMoney = valueForMoney;
+                    bestValueProduct = product.Id;
+                }
+            }
+            Console.WriteLine($"Mp3 speler met beste prijs per mB: {bestValueProduct}");
         }
     }
 } 
